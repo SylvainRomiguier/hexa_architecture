@@ -13,15 +13,18 @@ export interface UserUseCases {
 }
 
 export class UserUseCasesImpl implements UserUseCases {
-  constructor(private userService: UserService, private uuidService: UuidService) {}
+  constructor(
+    private userService: UserService,
+    private uuidService: UuidService
+  ) {}
 
   async createUser(name: string, email: string): Promise<void> {
-    const userDto = {
+    const user = new User({
       id: this.uuidService.generateUuid(),
       name,
       email,
-    };
-    await this.userService.saveUser(userDto);
+    });
+    await this.userService.saveUser(user.value);
   }
 
   async getUser(_id: string, presenter: UserPresenter): Promise<void> {
@@ -36,7 +39,7 @@ export class UserUseCasesImpl implements UserUseCases {
 
   async getAllUsers(presenter: UsersPresenter): Promise<void> {
     const usersDto = await this.userService.getAllUsers();
-    const users = usersDto.map(userDto => new User(userDto));
-    presenter.present(users.map(user => user.value));
+    const users = usersDto.map((userDto) => new User(userDto));
+    presenter.present(users.map((user) => user.value));
   }
 }
